@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Animal Detectives – may, might, could, can’t, must</title>
+<style>
+:root{--ink:#1f2a44;--bg:#fff7e8;--p:#6c5ce7;--g:#00b894;--r:#e17055;--o:#fdcb6e;--b:#0984e3}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Trebuchet MS",Verdana,sans-serif;background:linear-gradient(160deg,#fff7e8,#e3f4ff);color:var(--ink);min-height:100vh}
+header{background:linear-gradient(90deg,#6c5ce7,#0984e3);color:#fff;padding:10px 14px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:5}
+header h1{font-size:18px;margin:0}
+.pills{display:flex;gap:6px;flex-wrap:wrap}
+.pill{border:0;border-radius:20px;padding:6px 12px;font-weight:bold;cursor:pointer;background:#ffffff40;color:#fff;font-size:13px}
+.pill.on{background:#fff;color:var(--p)}
+.hud{font-weight:bold;font-size:14px;display:flex;gap:10px}
+main{max-width:860px;margin:14px auto;padding:0 12px 90px}
+.card{background:#fff;border-radius:22px;padding:18px;box-shadow:0 8px 24px #1f2a4422;animation:pop .45s}
+@keyframes pop{from{transform:scale(.9);opacity:0}to{transform:none;opacity:1}}
+h2{margin:0 0 6px;color:var(--p)}
+.tag{display:inline-block;background:var(--o);border-radius:12px;padding:3px 10px;font-size:12px;font-weight:bold;margin-bottom:8px}
+.big{font-size:90px;text-align:center;transition:filter .8s;margin:6px}
+.btn{border:0;border-radius:16px;padding:11px 20px;font-size:16px;font-weight:bold;color:#fff;background:var(--p);cursor:pointer;box-shadow:0 4px 0 #4834d4;margin:4px}
+.btn:active{transform:translateY(3px);box-shadow:none}
+.btn.g{background:var(--g);box-shadow:0 4px 0 #00967a}
+.btn.o{background:var(--r);box-shadow:0 4px 0 #c0563b}
+.opt{display:block;width:100%;text-align:left;border:3px solid #dfe6f5;background:#fff;border-radius:14px;padding:11px;margin:7px 0;font-size:16px;cursor:pointer;transition:.2s}
+.opt:hover{border-color:var(--p);transform:translateX(4px)}
+.ok{background:#d6f8ea!important;border-color:var(--g)!important;animation:jump .5s}
+.no{background:#ffe0da!important;border-color:var(--r)!important;animation:shake .4s}
+@keyframes shake{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+@keyframes jump{50%{transform:scale(1.04)}}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.mod{border-radius:18px;padding:12px;color:#fff;text-align:center;cursor:pointer;transition:.2s}
+.mod:hover{transform:scale(1.04) rotate(-1deg)}
+.mod b{font-size:24px;display:block}
+.say{cursor:pointer}.say:after{content:" 🔊";font-size:.8em}
+.bar{height:22px;border-radius:12px;background:linear-gradient(90deg,#d63031,#fdcb6e 50%,#00b894);margin:10px 0 2px}
+.bl{display:flex;justify-content:space-between;font-size:12px;font-weight:bold}
+table{border-collapse:collapse;width:100%;text-align:center}
+td,th{border:2px solid #fff;padding:8px;background:#dff3fb}
+th{background:var(--b);color:#fff}
+.sel{display:inline-flex;gap:4px;margin:0 3px}
+.sel button{border:2px solid var(--p);background:#fff;border-radius:10px;padding:2px 8px;font-size:15px;cursor:pointer}
+.row{display:flex;gap:10px;flex-wrap:wrap}.row>div{flex:1;min-width:150px}
+.item{border:3px solid #dfe6f5;border-radius:12px;padding:10px;margin:6px 0;cursor:pointer;background:#fff;font-size:15px}
+.item.pick{border-color:var(--o);background:#fff6d6}
+.item.done{border-color:var(--g);background:#d6f8ea;cursor:default}
+.bucket{border:3px dashed;border-radius:16px;padding:8px;min-height:90px;cursor:pointer;font-weight:bold;text-align:center}
+.bucket div{font-weight:normal;font-size:14px;background:#fff;border-radius:8px;margin:3px;padding:3px}
+nav{position:fixed;bottom:0;left:0;right:0;background:#fff;padding:8px;display:flex;justify-content:center;gap:10px;box-shadow:0 -4px 14px #0002}
+input[type=text],textarea{width:100%;font-size:16px;padding:8px;border:3px solid #dfe6f5;border-radius:10px;margin-top:5px;font-family:inherit}
+.fb{font-size:14px;margin-top:4px;font-weight:bold}
+.lv{width:100%;text-align:left;padding:14px}
+.conf{position:fixed;top:-30px;font-size:26px;z-index:20;pointer-events:none;animation:fall 2.4s linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(540deg)}}
+.hearts{font-size:22px}
+footer{text-align:center;font-size:13px;opacity:.7;margin:20px}
+</style></head><body>
+<header><h1>🕵️ Animal Detectives</h1><div class="pills" id="pills"></div>
+<div class="hud"><span id="tm">⏱ 25:00</span><span id="sc">⭐ 0</span></div></header>
+<main id="app"></main>
+<nav><button class="btn" id="bk">◀ Back</button><button class="btn g" id="nx">Next ▶</button></nav>
+<footer>Created by T.Badria Alfalahi ❤️🌸 · Grade 7 · Awesome animals · Lesson 3, part 1</footer>
+<script>
+const $=s=>document.querySelector(s),app=$('#app');
+let AC;function snd(t){try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();const seq={ok:[523,659,784],no:[200,150],cl:[440],win:[523,659,784,1046,1318]}[t];seq.forEach((f,i)=>{const o=AC.createOscillator(),g=AC.createGain();o.type=t=='no'?'sawtooth':'triangle';o.frequency.value=f;o.connect(g);g.connect(AC.destination);const s=AC.currentTime+i*.11;g.gain.setValueAtTime(.15,s);g.gain.exponentialRampToValueAtTime(.001,s+.25);o.start(s);o.stop(s+.26)})}catch(e){}}
+function say(t){try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='en-GB';u.rate=.85;speechSynthesis.speak(u)}catch(e){}}
+function conf(){snd('win');for(let i=0;i<30;i++){const s=document.createElement('span');s.className='conf';s.textContent=['🎉','⭐','🦁','🐪','🦔','✨'][i%6];s.style.left=Math.random()*100+'vw';s.style.animationDelay=Math.random()*.8+'s';document.body.appendChild(s);setTimeout(()=>s.remove(),3500)}}
+let score=0;function add(n){score+=n;$('#sc').textContent='⭐ '+score}
+const norm=s=>s.toLowerCase().replace(/[’‘`]/g,"'").replace(/cannot|can not|cant/g,"can't").trim();
+const grp=w=>{w=norm(w);return w=='must'?'T':w=="can't"?'F':['may','might','could'].includes(w)?'U':''};
+const shuf=a=>a.map(x=>[Math.random(),x]).sort((a,b)=>a[0]-b[0]).map(x=>x[1]);
+document.addEventListener('click',e=>{const s=e.target.closest('.say');if(s)say(s.textContent.replace(/🔊/g,''))});
+// timer
+let left=1500,iv=null;function startT(){if(iv)return;iv=setInterval(()=>{left=Math.max(0,left-1);$('#tm').textContent='⏱ '+String(Math.floor(left/60)).padStart(2,'0')+':'+String(left%60).padStart(2,'0')},1000)}
+// screens
+const stageOf=[0,1,1,1,2,2,2,3,3,4];const names=['Start','1 · Presentation','2 · Practice','3 · Production'];
+let cur=0,lvl=0;
+const S=[welcome,zoom,meter,rules,match,sortG,quiz,levels,levelAct,results];
+function go(n){cur=Math.max(0,Math.min(S.length-1,n));app.innerHTML='';const c=document.createElement('div');c.className='card';app.appendChild(c);S[cur](c);pills();window.scrollTo(0,0);$('#bk').style.visibility=cur?'visible':'hidden';$('#nx').style.visibility=cur==S.length-1?'hidden':'visible'}
+function pills(){$('#pills').innerHTML=[1,2,3].map(i=>`<button class="pill ${stageOf[cur]==i?'on':''}" onclick="go(${[0,1,4,7][i]});snd('cl')">${names[i]}</button>`).join('')}
+$('#nx').onclick=()=>{snd('cl');go(cur+1)};$('#bk').onclick=()=>{snd('cl');go(cur-1)};
+
+function welcome(c){c.innerHTML=`<div class="big">🔍🐾</div><h2>Animal Detectives!</h2>
+<p>Today we learn how to <b>guess</b> what an animal is, using <b>may, might, could, can’t</b> and <b>must</b>.</p>
+<p>⏱ 25 minutes: <b>Presentation (7)</b> → <b>Practice (10)</b> → <b>Production (8)</b></p>
+<button class="btn g" onclick="startT();snd('win');go(1)">▶ Start the lesson</button>`}
+
+function zoom(c){const steps=[["I can see spines.","It could be a hedgehog. It might be a cactus.",20],["It is small and it walks.","It might be a hedgehog. It can’t be a fish.",10],["It rolls into a ball!","It must be a hedgehog!",0]];let i=-1;
+c.innerHTML=`<span class="tag">Presentation · Warm-up</span><h2>Mystery Zoom 🔎</h2><div class="big" id="em" style="filter:blur(28px)">🦔</div><div id="cl" style="min-height:90px;font-size:18px"></div><button class="btn o" id="zb">🔍 Get a clue</button>`;
+$('#zb').onclick=()=>{i++;snd('cl');const s=steps[i];$('#em').style.filter=`blur(${s[2]}px)`;$('#cl').innerHTML+=`<p>💡 Clue ${i+1}: “${s[0]}”<br><b class="say" style="color:var(--p)">${s[1]}</b></p>`;if(i==2){$('#zb').style.display='none';conf()}else if(i==1)$('#zb').textContent='🔍 Last clue'}}
+
+function meter(c){const M=[['must','#00b894','✅ I am SURE it is true','It has spines. It must be a hedgehog.'],['can’t','#d63031','❌ I am SURE it is NOT true','Bears don’t live here. It can’t be a bear.'],['may / might / could','#e17055','🤔 I am NOT SURE','Listen! I can hear birds. It could be a bird.']];
+c.innerHTML=`<span class="tag">Presentation · Rule</span><h2>How sure are you?</h2><div class="bar"></div><div class="bl"><span>can’t = 0%</span><span>may · might · could = 50%</span><span>must = 100%</span></div><p>Tap a card to hear an example 👇</p><div class="cols">${M.map((m,i)=>`<div class="mod" style="background:${m[1]}" onclick="snd('cl');say('${m[3].replace(/’/g,"'")}');document.getElementById('ex${i}').style.display='block'"><b>${m[0]}</b>${m[2]}<div id="ex${i}" style="display:none;background:#fff;color:#1f2a44;border-radius:10px;margin-top:8px;padding:6px;font-size:14px">${m[3]}</div></div>`).join('')}</div>
+<h3>Grammar table</h3><table><tr><th>Subject</th><th>Modal</th><th>be / have</th><th>Rest</th></tr><tr><td>It<br>He / She<br>You</td><td style="color:#00875a"><b>may<br>might<br>could<br>can’t<br>must</b></td><td style="color:#d63031"><b>be</b><hr><b>have</b></td><td>a bird · a hedgehog<br>right · scared<hr>fur · scales</td></tr></table>`}
+
+function rules(c){const Q=[['We use','must|may','when we are sure something is true.',0],['We use could /','can’t|must','when we are sure something is not true.',0],['We use could, may or might when we are','sure|not sure','if something is true.',1]];let ok=0;
+c.innerHTML=`<span class="tag">Presentation · Check</span><h2>Circle the correct option ⭕</h2>${Q.map((q,i)=>`<p style="font-size:17px">${q[0]} <span class="sel" id="r${i}">${q[1].split('|').map((o,j)=>`<button>${o}</button>`).join('')}</span> ${q[2]}</p>`).join('')}<div class="fb" id="rf"></div>`;
+Q.forEach((q,i)=>document.querySelectorAll(`#r${i} button`).forEach((b,j)=>b.onclick=()=>{if(b.parentNode.dataset.d)return;if(j==q[3]){b.style.background='#b8f2dc';b.parentNode.dataset.d=1;snd('ok');add(5);ok++;if(ok==3){conf();$('#rf').textContent='🌟 Great! You know the rule!'}}else{b.style.background='#ffd0c8';snd('no');b.classList.add('no')}}))}
+
+function match(c){const P=[['1','It can’t be a bear.','e','Bears don’t live here.'],['2','It could be a bird.','d','Listen. I can hear birds.'],['3','It can’t be a snake.','a','It doesn’t have scales.'],['4','It must be a hedgehog.','b','It has spines.'],['5','It may be scared.','c','It isn’t moving now.']];let sel=null,n=0;const R=shuf(P);
+c.innerHTML=`<span class="tag">Practice 1 · Match</span><h2>Match the sentences 🔗</h2><p>Tap a sentence, then its reason.</p><div class="row"><div id="L">${P.map(p=>`<div class="item" data-k="${p[0]}">${p[0]}. ${p[1]}</div>`).join('')}</div><div id="Rr">${R.map(p=>`<div class="item" data-k="${p[0]}">${p[2]}. ${p[3]}</div>`).join('')}</div></div>`;
+document.querySelectorAll('#L .item').forEach(e=>e.onclick=()=>{if(e.classList.contains('done'))return;document.querySelectorAll('#L .item').forEach(x=>x.classList.remove('pick'));e.classList.add('pick');sel=e;snd('cl')});
+document.querySelectorAll('#Rr .item').forEach(e=>e.onclick=()=>{if(!sel||e.classList.contains('done'))return;if(sel.dataset.k==e.dataset.k){sel.className=e.className='item done';snd('ok');add(5);sel=null;if(++n==5)conf()}else{e.classList.add('no');snd('no');setTimeout(()=>e.classList.remove('no'),500)}})}
+
+function sortG(c){const I=[['It must be a hedgehog.','T'],['It can’t be a snake.','F'],['It may be scared.','U'],['It could be a bird.','U'],['It can’t be a bear.','F'],['It must have fur.','T'],['It might have scales.','U'],['It might be a bear.','U']];let cs=null,n=0;
+const B=[['T','✅ Sure it is true','#00b894'],['F','❌ Sure it is NOT true','#d63031'],['U','🤔 Not sure','#e17055']];
+c.innerHTML=`<span class="tag">Practice 2 · Sort</span><h2>Sort the sentences 📦</h2><p>Tap a sentence, then tap the right box.</p><div id="ch">${shuf(I).map(x=>`<span class="item say" style="display:inline-block;margin:3px" data-g="${x[1]}">${x[0]}</span>`).join('')}</div><div class="cols" style="margin-top:10px">${B.map(b=>`<div class="bucket" data-g="${b[0]}" style="border-color:${b[2]};color:${b[2]}">${b[1]}</div>`).join('')}</div>`;
+document.querySelectorAll('#ch .item').forEach(e=>e.onclick=ev=>{ev.stopPropagation();document.querySelectorAll('#ch .item').forEach(x=>x.classList.remove('pick'));e.classList.add('pick');cs=e});
+document.querySelectorAll('.bucket').forEach(b=>b.onclick=()=>{if(!cs)return;if(cs.dataset.g==b.dataset.g){const d=document.createElement('div');d.textContent=cs.textContent.replace('🔊','');b.appendChild(d);cs.remove();cs=null;snd('ok');add(4);if(++n==8)conf()}else{b.classList.add('no');snd('no');setTimeout(()=>b.classList.remove('no'),450)}})}
+
+function quiz(c){const Q=[['I see big footprints, but I am not sure. It ___ be an elephant.',['must','can’t','could'],2],['The animal is climbing a tree. Fish don’t climb trees. It ___ be a fish.',['can’t','must','might'],0],['It has spines. Only hedgehogs have spines here. It ___ be a hedgehog.',['may','must','can’t'],1],['I can hear a roar, but I’m not sure. It ___ be a lion.',['might','can’t','must'],0],['It has fur and four legs. Birds have no fur. It ___ be a bird.',['could','can’t','must'],1],['It has a shell and walks very slowly. I’m sure. It ___ be a tortoise.',['must','might','can’t'],0]];let i=0,h=3,ok=0;
+function show(){if(i>=Q.length||h<=0){c.innerHTML=`<h2>${h>0?'🏆 Detective Master!':'💪 Good try!'}</h2><p style="font-size:20px">You solved <b>${ok}/${Q.length}</b> cases.</p>`;if(h>0)conf();return}
+const q=Q[i];c.innerHTML=`<span class="tag">Practice 3 · Game</span><h2>Case ${i+1}/${Q.length} 🕵️</h2><div class="hearts">${'❤️'.repeat(h)}${'🖤'.repeat(3-h)}</div><p style="font-size:19px" class="say">${q[0]}</p>${q[1].map((o,j)=>`<button class="opt" data-j="${j}">${o}</button>`).join('')}`;
+c.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const j=+b.dataset.j;c.querySelectorAll('.opt').forEach(x=>x.onclick=null);if(j==q[2]){b.classList.add('ok');snd('ok');add(5);ok++}else{b.classList.add('no');c.querySelectorAll('.opt')[q[2]].classList.add('ok');snd('no');h--}i++;setTimeout(show,1300)})}show()}
+
+function levels(c){c.innerHTML=`<span class="tag">Production · Differentiation</span><h2>Choose your level 🎯</h2><p>Pick the challenge that is right for you. Each level has auto-correction!</p>
+<button class="btn lv" onclick="lvl=1;snd('cl');go(8)">⭐ Starter — choose the correct modal</button>
+<button class="btn lv g" onclick="lvl=2;snd('cl');go(8)">⭐⭐ Explorer — type the modal yourself</button>
+<button class="btn lv o" onclick="lvl=3;snd('cl');go(8)">⭐⭐⭐ Expert — write your own sentences</button>`}
+
+function levelAct(c){
+const A=[['It has feathers and wings. I’m sure. It ___ be a bird.','T'],['It is very big with a long trunk. It ___ be a mouse.','F'],['I hear a noise in the bush, but I’m not sure. It ___ be a snake.','U'],['It has a shell. I’m sure. It ___ be a tortoise.','T'],['It lives in the sea. It ___ be a camel.','F']];
+const B=[['It has scales and no legs. I’m sure. It ___ be a snake.','T'],['A shark lives in water. It ___ be a bird.','F'],['I see something orange in the grass, but I’m not sure. It ___ be a fox.','U'],['A bird has feathers. A bird ___ have fur.','F'],['It has big claws, but I’m not sure. It ___ be a bear.','U']];
+if(lvl<3){const D=lvl==1?A:B;
+c.innerHTML=`<span class="tag">Production · Level ${lvl}</span><h2>${lvl==1?'⭐ Starter':'⭐⭐ Explorer'}</h2><p>${lvl==1?'Choose: <b>must · can’t · may · might · could</b>':'Type one modal: must, can’t, may, might or could. (More than one answer may be correct!)'}</p>${D.map((d,i)=>`<div style="margin:12px 0"><span class="say">${d[0].replace('___','…')}</span><br>${lvl==1?`<span class="sel" data-i="${i}">${['must','can’t','may','might','could'].map(o=>`<button>${o}</button>`).join('')}</span>`:`<input type="text" data-i="${i}" placeholder="type here" autocomplete="off">`}<div class="fb" id="f${i}"></div></div>`).join('')}<button class="btn g" id="ck">✔ Check my answers</button>`;
+let ans=[];c.querySelectorAll('.sel button').forEach(b=>b.onclick=()=>{b.parentNode.querySelectorAll('button').forEach(x=>x.style.background='#fff');b.style.background='#ffe58f';ans[b.parentNode.dataset.i]=b.textContent;snd('cl')});
+$('#ck').onclick=()=>{let ok=0;D.forEach((d,i)=>{const v=lvl==1?ans[i]||'':c.querySelector(`input[data-i="${i}"]`).value;const g=grp(v),f=$('#f'+i);if(g&&g==d[1]){ok++;f.style.color='#00875a';f.textContent='✅ Correct!'}else{f.style.color='#d63031';f.textContent='❌ Try: '+(d[1]=='T'?'must':d[1]=='F'?'can’t':'may / might / could')+' — '+(d[1]=='T'?'you are sure it is true':d[1]=='F'?'you are sure it is not true':'you are not sure')}});
+add(ok*(lvl*3));snd(ok>=4?'win':ok?'ok':'no');if(ok==5)conf();$('#ck').textContent='🔁 Check again (no extra points)';$('#ck').onclick=()=>go(8)}}
+else{const P=[['🪶','You find a feather. You are not sure which bird. Write with might / may / could.','U'],['🦎','You see scales and a long tail. You are sure it is a lizard. Write with must.','T'],['🐘','You see a trunk. You are sure it is not a bird. Write with can’t.','F']];
+c.innerHTML=`<span class="tag">Production · Level 3</span><h2>⭐⭐⭐ Expert Writer</h2><p>Write: <b>It + modal + be + a/an + animal</b>. Example: <i>It might be a parrot.</i></p>${P.map((p,i)=>`<div style="margin:12px 0"><span style="font-size:42px">${p[0]}</span> ${p[1]}<input type="text" data-i="${i}" placeholder="It ... be a ..." autocomplete="off"><div class="fb" id="f${i}"></div></div>`).join('')}<button class="btn g" id="ck">✔ Check my sentences</button><p>🗣 Pair work: show your partner a picture. Ask “What is it?” and answer with a modal.</p>`;
+$('#ck').onclick=()=>{let ok=0;P.forEach((p,i)=>{const v=norm(c.querySelector(`input[data-i="${i}"]`).value),f=$('#f'+i);const m=v.match(/^(it|this|that)\s+(may|might|could|can't|must)\s+(be|have)\s+(a|an)?\s*\w+/);let msg='';if(!m)msg='Use: It + modal + be + a/an + animal.';else if(grp(m[2])!=p[2])msg='Check your modal: '+(p[2]=='T'?'use must.':p[2]=='F'?'use can’t.':'use may, might or could.');if(!msg){ok++;f.style.color='#00875a';f.textContent='✅ Excellent!'}else{f.style.color='#d63031';f.textContent='❌ '+msg}});
+add(ok*8);snd(ok==3?'win':ok?'ok':'no');if(ok==3)conf()}}}
+
+function results(c){c.innerHTML=`<div class="big">🏆</div><h2>Mission complete!</h2><p style="font-size:22px">Your score: <b>⭐ ${score}</b></p><p>${score>=90?'Super Detective! 🌟':score>=50?'Great detective! 👏':'Keep practising, detective! 💪'}</p><p><b>Remember:</b> must = sure it is true · can’t = sure it is not true · may / might / could = not sure.</p><button class="btn" onclick="score=0;add(0);go(0)">🔁 Play again</button>`;conf()}
+go(0);
+</script></body></html>
